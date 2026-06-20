@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アカウント作成</title>
+    <style>
+        /* ソニック風・レトロホラーフォント風のデザイン */
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: 'Press Start 2P', cursive, sans-serif;
+            background-color: #ffffff; /* 初期背景は真っ白 */
+            transition: background-color 3s ease; /* ゆっくり真っ暗にする用 */
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            padding: 20px;
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #000;
+            margin-bottom: 30px;
+        }
+
+        p {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.8;
+        }
+
+        /* ボタン群 */
+        .btn-group {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        button {
+            font-family: 'Press Start 2P', cursive;
+            padding: 12px 24px;
+            font-size: 14px;
+            cursor: pointer;
+            border: 4px solid #000;
+            background-color: #fff;
+            color: #000;
+            box-shadow: 4px 4px 0px #000;
+        }
+
+        button:hover {
+            background-color: #000;
+            color: #fff;
+        }
+
+        /* 入力フォーム（ソニックUI風にアレンジ） */
+        .form-section {
+            display: none;
+            background: #f0f0f0;
+            border: 4px solid #0044ff;
+            padding: 30px;
+            box-shadow: 8px 8px 0px #002288;
+            text-align: left;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 10px;
+            color: #0044ff;
+            margin-bottom: 8px;
+        }
+
+        input, select {
+            width: 100%;
+            font-family: 'Press Start 2P', cursive;
+            padding: 10px;
+            font-size: 12px;
+            border: 4px solid #000;
+            outline: none;
+        }
+
+        /* 隠しオーディオ（裏で流す用） */
+        audio {
+            display: none;
+        }
+
+        /* ジャンスケ用ビデオ */
+        #jumpscare-video {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100vw;
+            height: 100vh;
+            object-fit: contain;
+            z-index: 100;
+            background-color: #000;
+        }
+
+        /* ラストシーンのレイアウト */
+        #horror-scene {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            z-index: 50;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 10vh;
+        }
+
+        #horror-img {
+            opacity: 0;
+            width: 300px;
+            height: auto;
+            transition: opacity 3s ease;
+            margin-bottom: 5vh;
+        }
+
+        #text-container {
+            color: #ff0000; /* 赤字 */
+            font-size: 14px;
+            text-align: center;
+            min-height: 50px;
+            line-height: 2;
+            padding: 0 20px;
+            word-break: break-word;
+        }
+
+        /* タイピングのカーソル風アニメーション */
+        .typing::after {
+            content: '_';
+            animation: blink 0.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="main-stage">
+        <div id="step-1">
+            <h1>アカウント作成</h1>
+            <p>アカウント作成画面が表示されました。<br>アカウントを作りますか？</p>
+            <div class="btn-group">
+                <button onclick="chooseYes()">はい</button>
+                <button onclick="chooseNo()">いいえ</button>
+            </div>
+        </div>
+
+        <div id="step-2" class="form-section">
+            <h2 style="font-size: 14px; color:#000; margin-bottom:20px; text-align:center;">INPUT DATA</h2>
+            <form id="account-form" onsubmit="return false;">
+                <div class="form-group">
+                    <label>NAME</label>
+                    <input type="text" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label>EMAIL</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label>BIRTHDAY</label>
+                    <input type="date" id="birthday" required>
+                </div>
+                <div class="form-group">
+                    <label>GENDER</label>
+                    <select id="gender" required>
+                        <option value="">SELECT...</option>
+                        <option value="male">MALE</option>
+                        <option value="female">FEMALE</option>
+                        <option value="other">OTHER</option>
+                    </select>
+                </div>
+                <div class="btn-group">
+                    <button type="button" onclick="submitForm()">確認</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="step-3" class="form-section" style="text-align: center;">
+            <h2 style="font-size: 14px; color: #ff0000;">WARNING</h2>
+            <p>最終確認しますか？</p>
+            <div class="btn-group">
+                <button onclick="finalConfirm()">はい</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="horror-scene">
+        <img id="horror-img" src="1000017012.jpg" alt="??">
+        <div id="text-container" class="typing"></div>
+    </div>
+
+    <audio id="bgm" src="1000017013.mp4" loop></audio>
+    <audio id="sfx-laugh" src="1000017014.mp4"></audio>
+    <video id="jumpscare-video" src="1000017015.mp4" preload="auto"></video>
+
+    <script>
+        const bgm = document.getElementById('bgm');
+        const sfxLaugh = document.getElementById('sfx-laugh');
+        const jumpscareVideo = document.getElementById('jumpscare-video');
+
+        // セリフテキスト配列
+        const lines = [
+            "There are no rules in this world.",
+            "It never changes, no matter when or where.",
+            "However, I am different.",
+            "Just watching it.",
+            "I think that is a very wonderful thing.",
+            "Well then.",
+            "Prepare for the next game round.",
+            "Because we are always...",
+            "Because you are there."
+        ];
+
+        // 1. 「はい」を選択：BGM開始＆フォーム移行
+        function chooseYes() {
+            bgm.play().catch(e => console.log("ユーザー操作によりオーディオ再生開始"));
+            document.getElementById('step-1').style.display = 'none';
+            document.getElementById('step-2').style.display = 'block';
+        }
+
+        // 1. 「いいえ」を選択：フリーズ
+        function chooseNo() {
+            document.getElementById('main-stage').innerHTML = ''; // 全て消去
+            // 何も表示せずフリーズ（操作不能）
+        }
+
+        // 2. 確認ボタン：バリデーションチェック
+        function submitForm() {
+            const form = document.getElementById('account-form');
+            if (form.checkValidity()) {
+                document.getElementById('step-2').style.display = 'none';
+                document.getElementById('step-3').style.display = 'block';
+            } else {
+                alert("ちゃんとしたデータの内容を入力してください。");
+            }
+        }
+
+        // 2. 最終確認「はい」：暗転＆ホラー演出トリガー
+        function finalConfirm() {
+            document.getElementById('step-3').style.display = 'none';
+            document.body.style.backgroundColor = '#000000'; // ゆっくり真っ暗に
+            
+            // 3秒かけて暗転した後に音楽停止＆笑い声再生
+            setTimeout(() => {
+                bgm.pause();
+                bgm.currentTime = 0;
+                
+                // わらい再生
+                sfxLaugh.play();
+                
+                // 笑い声が終わったらジャンスケ
+                sfxLaugh.onended = () => {
+                    triggerJumpscare();
+                };
+            }, 3000);
+        }
+
+        // 3. ジャンスケ演出
+        function triggerJumpscare() {
+            jumpscareVideo.style.display = 'block';
+            jumpscareVideo.play();
+
+            // ビデオ再生終了後の処理
+            jumpscareVideo.onended = () => {
+                jumpscareVideo.style.display = 'none';
+                startHorrorScene();
+            };
+        }
+
+        // 4. ラストテキストアニメーション
+        function startHorrorScene() {
+            const horrorScene = document.getElementById('horror-scene');
+            const horrorImg = document.getElementById('horror-img');
+            
+            horrorScene.style.display = 'flex';
+            
+            // 数秒後（2秒後）に画像を徐々に表示
+            setTimeout(() => {
+                horrorImg.style.opacity = '1';
+                // 画像が表示され始めたらテキストタイピングも開始
+                setTimeout(() => {
+                    playTextSequence(0);
+                }, 1000);
+            }, 2000);
+        }
+
+        // タイピングアニメーション関数
+        function playTextSequence(lineIndex) {
+            if (lineIndex >= lines.length) {
+                // すべての文字が打たれたら完全に真っ暗にする
+                document.getElementById('horror-scene').innerHTML = '';
+                return;
+            }
+
+            const textContainer = document.getElementById('text-container');
+            const currentText = lines[lineIndex];
+            let charIndex = 0;
+            textContainer.innerHTML = '';
+            textContainer.classList.add('typing');
+
+            function typeChar() {
+                if (charIndex < currentText.length) {
+                    textContainer.innerHTML += currentText.charAt(charIndex);
+                    charIndex++;
+                    setTimeout(typeChar, 100); // 1文字ずつの打たれる速度
+                } else {
+                    // 1行打ち終わったら2秒待機して一度消去、次の行へ
+                    textContainer.classList.remove('typing');
+                    setTimeout(() => {
+                        textContainer.innerHTML = '';
+                        setTimeout(() => {
+                            playTextSequence(lineIndex + 1);
+                        }, 500); // 消去後、次へ進むまでのインターバル
+                    }, 2000);
+                }
+            }
+            typeChar();
+        }
+    </script>
+</body>
+</html>
